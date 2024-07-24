@@ -28,7 +28,7 @@ def index(request):
 
 
 def about(request):
-    return render(request, 'women/about.html', {'title': 'О сайте', 'url': slugify("About the site"),})
+    return render(request, 'women/about.html', {'title': 'О сайте', 'url': slugify("About the site"), 'menu': menu})
 
 
 def categories(request, cat_id):
