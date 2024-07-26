@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
-from .models import Women
+from .models import Women, PublishedModel
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
@@ -20,7 +20,7 @@ cats_db = [
 
 
 def index(request):
-    posts = Women.objects.filter(is_published=1)
+    posts = Women.published.all()
     data = {
         'title': 'Главная страница',
         'menu': menu,
@@ -63,7 +63,7 @@ def show_category(request, cat_id):
     data = {
         'title': 'Отображение по рубоикам',
         'menu': menu,
-        'posts': cats_db,
+        'posts': Women.published.all(),
         'cat_selected': cat_id,
     }
     return render(request, 'women/index.html', context=data)
