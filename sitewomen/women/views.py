@@ -17,7 +17,7 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
 def index(request):
     posts = Women.published.all()
     data = {
-        'title': 'Главная страница',
+        #'title': 'Главная страница',
         'menu': menu,
         'posts': posts,
         'cat_selected': 0,
@@ -60,7 +60,7 @@ def show_category(request, cat_slug):
     data = {
         'title': f"Рубрика: {category.name}",
         'menu': menu,
-        'posts': Women.published.all(),
+        'posts': posts, 
         'cat_selected': category.pk,
     }
     return render(request, 'women/index.html', context=data)

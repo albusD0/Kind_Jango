@@ -17,6 +17,7 @@ class Women(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
     content = models.TextField(blank=True, verbose_name='Текст статьи')
+    photo = models.ImageField(upload_to="photos/%Y/%m/%d/", verbose_name='Фото')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время обновления')
     is_published = models.BooleanField(choices=tuple(map(lambda x: (bool(x[0]), x[1]), Status.choices)),
@@ -31,7 +32,7 @@ class Women(models.Model):
 
 
     class Meta:
-        ordering = ['-time_create']
+        ordering = ['time_create']
         indexes = [
             models.Index(fields=['-time_create']),
         ]
