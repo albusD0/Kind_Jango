@@ -2,7 +2,7 @@
 
 {% block breadcrumbs %}
 <!-- Теги -->
-{% with post.tags.all as tags %}
+{% with women.tags.all as tags %}
 {% if tags %}
 <ul class="tags-list">
     <li>Теги:</li>
@@ -15,11 +15,11 @@
 {% endblock %}
 
 {% block content %}
-<h1>{{post.title}}</h1>
+<h1>{{women.title}}</h1>
  
-{% if post.photo %}
-<p ><img class="img-article-left" src="{{post.photo.url}}"></p>
+{% if women.photo %}
+<p ><img class="img-article-left" src="{{women.photo.url}}"></p>
 {% endif %}
  
-{{post.content|linebreaks}}
+{{women.content|linebreaks}}
 {% endblock %}

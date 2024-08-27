@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 
+from .forms import AddPostForm
 from .models import Women, PublishedModel, Category, TagPost
 
 menu = [{'title': "О сайте", 'url_name': 'about'},
@@ -12,34 +13,54 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
+from django.views.generic import ListView, DetailView, CreateView
+from .forms import *
 
+class AddPost(CreateView):
+    form_class = AddPostForm
+    template_name = 'women/addpage.html'
+class WomenHome(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['cat_selected'] = 0
+        return context
 
-def index(request):
-    posts = Women.published.all()
-    data = {
-        #'title': 'Главная страница',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': 0,
-    }
-    return render(request, 'women/index.html', context=data)
+    def get_queryset(self):
+        return Women.objects.filter(is_published=True)
+
+# def index(request):
+#     posts = Women.published.all()
+#     data = {
+#         #'title': 'Главная страница',
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': 0,
+#     }
+#     return render(request, 'women/index.html', context=data)
 
 
 def about(request):
     return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu})
 
+class ShowPost(DetailView):
+    model = Women
+    template_name = 'women/post.html'
+    slug_url_kwarg = 'post_slug'
 
-def show_post(request, post_slug):
-    post = get_object_or_404(Women, slug=post_slug)
-
-    data = {
-        'title': post.title,
-        'menu': menu,
-        'post': post,
-        'cat_selected': 1,
-    }
-
-    return render(request, 'women/post.html', context=data)
+# def show_post(request, post_slug):
+#     post = get_object_or_404(Women, slug=post_slug)
+#
+#     data = {
+#         'title': post.title,
+#         'menu': menu,
+#         'post': post,
+#         'cat_selected': 1,
+#     }
+#
+#     return render(request, 'women/post.html', context=data)
 
 
 def addpage(request):
@@ -53,17 +74,24 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
+class WomenCategory(ListView):
+    model = Women
+    template_name = 'women/index.html'
+    allow_empty = False
+    def get_queryset(self):
+        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
-def show_category(request, cat_slug):
-    category = get_object_or_404(Category, slug=cat_slug)
-    posts = Women.published.filter(cat_id=category.pk)
-    data = {
-        'title': f"Рубрика: {category.name}",
-        'menu': menu,
-        'posts': posts, 
-        'cat_selected': category.pk,
-    }
-    return render(request, 'women/index.html', context=data)
+
+# def show_category(request, cat_slug):
+#     category = get_object_or_404(Category, slug=cat_slug)
+#     posts = Women.published.filter(cat_id=category.pk)
+#     data = {
+#         'title': f"Рубрика: {category.name}",
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': category.pk,
+#     }
+#     return render(request, 'women/index.html', context=data)
 
 def show_tag_postlist(request, tag_slug):
     tag = get_object_or_404(TagPost, slug=tag_slug)
