@@ -16,9 +16,9 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
 from django.views.generic import ListView, DetailView, CreateView
 from .forms import *
 
-class AddPost(CreateView):
-    form_class = AddPostForm
-    template_name = 'women/addpage.html'
+# class AddPost(CreateView):
+#     form_class = AddPostForm
+#     template_name = 'women/addpage.html'
 class WomenHome(ListView):
     model = Women
     template_name = 'women/index.html'
@@ -64,7 +64,13 @@ class ShowPost(DetailView):
 
 
 def addpage(request):
-    return HttpResponse("Добавление статьи")
+    if request.method == 'POST':
+        form = AddPostForm(request.POST)
+        if form.is_valid():
+            print(form.cleaned_data)
+    else:
+        form = AddPostForm()
+    return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
 
 
 def contact(request):
