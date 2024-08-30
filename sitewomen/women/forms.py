@@ -21,7 +21,10 @@ from .models import Category, Husband, Women
 #             raise ValidationError("Должны присутствовать только русские символы, дефис и пробел.")
 
 class AddPostForm(forms.ModelForm):
+    is_published = forms.BooleanField(required=False, label='Статус', initial=True)
     cat = forms.ModelChoiceField(queryset=Category.objects.all(), label='Категории', empty_label='Категория не выбрана')
+    photo = forms.ImageField(label='Фото', required=False)
+
     class Meta:
         model = Women
         fields = ['title', 'slug', 'content', 'is_published', 'cat', 'photo']
