@@ -67,12 +67,14 @@ def addpage(request):
     if request.method == 'POST':
         form = AddPostForm(request.POST, request.FILES)
         if form.is_valid():
-            #print(form.cleaned_data)
-            try:
-                Women.objects.create(**form.cleaned_data)
-                return redirect('home')
-            except:
-                form.add_error(None, 'Ошибка добавления поста')
+            #print(form.cleaned_data) - это вывод в консоли
+    #         try: а этот вариант для формы не связанной с Model
+    #             Women.objects.create(**form.cleaned_data)
+    #             return redirect('home')
+    #         except:
+    #             form.add_error(None, 'Ошибка добавления поста')
+            form.save() # сохранение данных формы в БД для Model
+            return redirect('home')
     else:
         form = AddPostForm()
     return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
