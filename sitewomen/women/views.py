@@ -46,11 +46,13 @@ def handle_uploaded_file(f):
         for chunk in f.chunks():
             destination.write(chunk)
 
-def about(request):
+def about(request, form=None):
+    #files = form.cleaned_data["files"] #UploadedFile.objects.all()
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            handle_uploaded_file(form.cleaned_data['file'])
+        for uploaded_file in request.FILES.getlist('files'):
+            handle_uploaded_file(uploaded_file)#UploadedFile.objects.create(file=uploaded_file)
+        return redirect('home')
     else:
         form = UploadFileForm()
     return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu, 'form': form})
