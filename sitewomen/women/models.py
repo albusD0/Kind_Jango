@@ -73,3 +73,7 @@ class TagPost(models.Model):
     def get_absolute_url(self):
         return reverse('tag', kwargs={'tag_slug': self.slug})
 
+class UploadFiles(models.Model):
+    file = models.FileField(upload_to='uploads')
+
+
