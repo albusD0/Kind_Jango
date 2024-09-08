@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
 from django.template.defaultfilters import slugify
 from django.views import View
@@ -14,7 +14,7 @@ menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Войти", 'url_name': 'login'}
 ]
 
-from django.views.generic import ListView, DetailView, CreateView, TemplateView
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, FormView, UpdateView
 from .forms import *
 
 # class AddPost(CreateView):
@@ -96,20 +96,44 @@ class ShowPost(DetailView):
 #         form = AddPostForm()
 #     return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
 
-class AddPage(View):
-    def get(self, request):
-        form = AddPostForm()
-        return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
+# class AddPage(View):
+#     def get(self, request):
+#         form = AddPostForm()
+#         return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
+#
+#
+#     def post(self, request):
+#         form = AddPostForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             form.save()  # сохранение данных формы в БД для Model
+#             return redirect('home')
+#         return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
 
+class AddPage(CreateView):
+    # form_class = AddPostForm
+    model = Women
+    fields = ['title', 'slug', 'content', 'is_published', 'cat', 'photo']
+    template_name = 'women/addpage.html'
+    #success_url = reverse_lazy('home')
 
-    def post(self, request):
-        form = AddPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()  # сохранение данных формы в БД для Model
-            return redirect('home')
-        return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
+    extra_context = {
+        'menu': menu,
+        'title': 'Добавление статьи',
+    }
 
+    # def form_valid(self, form): # Если используем CreateView то эта функция не нужна (FormView)
+    #     form.save()
+    #     return super().form_valid(form)
 
+class UpdatePage(UpdateView):
+    model = Women
+    fields = ['title', 'content', 'photo', 'is_published', 'cat', ]
+    template_name = 'women/addpage.html'
+
+    extra_context = {
+        'menu': menu,
+        'title': 'Редактирование статьи',
+    }
 def contact(request):
     return HttpResponse("Обратная связь")
 
