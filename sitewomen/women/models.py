@@ -1,5 +1,6 @@
 from django.db import models
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
+from django_ckeditor_5.fields import CKEditor5Field
 
 
 # Create your models here.
@@ -17,6 +18,7 @@ class Women(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
     content = models.TextField(blank=True, verbose_name='Текст статьи')
+    #text=CKEditor5Field('Text', config_name='extends')
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/", verbose_name='Фото')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
     time_update = models.DateTimeField(auto_now=True, verbose_name='Время обновления')
@@ -32,6 +34,8 @@ class Women(models.Model):
 
 
     class Meta:
+        verbose_name = 'Женщина'
+        verbose_name_plural = 'Женщины'
         ordering = ['time_create']
         indexes = [
             models.Index(fields=['-time_create']),
@@ -56,6 +60,10 @@ class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name="Категория")
     slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
     def __str__(self):
         return self.name
 
@@ -67,11 +75,15 @@ class TagPost(models.Model):
     tag = models.CharField(max_length=100, db_index=True)
     slug = models.SlugField(max_length=255, unique=True, db_index=True)
 
+    class Meta:
+        verbose_name = 'Тэг'
+        verbose_name_plural = 'Тэги'
+
     def __str__(self):
         return self.tag
 
     def get_absolute_url(self):
-        return reverse('tag', kwargs={'tag_slug': self.slug})
+        return reverse_lazy('tag', kwargs={'tag_slug': self.slug})
 
 class UploadFiles(models.Model):
     file = models.FileField(upload_to='uploads')

@@ -1,8 +1,10 @@
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 
-from .models import Women, Category
+from django.db import models
+from .models import Women, Category, TagPost
 
+from tinymce.widgets import TinyMCE
 
 # Register your models here.
 #admin.site.register(Women)
@@ -22,10 +24,25 @@ class WomenAdmin(admin.ModelAdmin):
             return mark_safe(f"<img src='{women.photo.url}' width=50>")
         return 'Без фото'
 
+    formfield_overrides = {
+        models.TextField: {'widget': TinyMCE()}
+    }
+
+class TagsInline(admin.StackedInline):
+    model = Women.tags.through
+
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('id', 'name')
     list_display_links = ('id', 'name')
 
+@admin.register(TagPost)
+class TagPostAdmin(admin.ModelAdmin):
+    list_display = ('tag', 'slug')
+    #list_display_links = ('id', 'name')
+    inlines = [
+        TagsInline,
+    ]
+    exclude = ["tags"]
 
 

@@ -8,26 +8,29 @@ from django.views import View
 from .forms import AddPostForm
 from .models import Women, PublishedModel, Category, TagPost, UploadFiles
 
+from django.views.generic import ListView, DetailView, CreateView, TemplateView, FormView, UpdateView
+from .forms import *
+from .utils import DataMixin
+
 menu = [{'title': "О сайте", 'url_name': 'about'},
         {'title': "Добавить статью", 'url_name': 'add_page'},
         {'title': "Обратная связь", 'url_name': 'contact'},
         {'title': "Войти", 'url_name': 'login'}
-]
+        ]
 
-from django.views.generic import ListView, DetailView, CreateView, TemplateView, FormView, UpdateView
-from .forms import *
 
 # class AddPost(CreateView):
 #     form_class = AddPostForm
 #     template_name = 'women/addpage.html'
 
-class WomenHome(ListView):
+class WomenHome(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
-    extra_context = {
-        'title': 'Главная страница',
-        'menu': menu,
-        'cat_selected': 0}
+    title_page = 'Главная страница'
+    # extra_context = {
+    #     'title': 'Главная страница',
+    #     'menu': menu,
+    #     'cat_selected': 0}
     #context_object_name = 'posts'
     def get_queryset(self):
         return Women.objects.filter(is_published=True)
@@ -62,10 +65,18 @@ def about(request, form=None):
 
 
 
-class ShowPost(DetailView):
-    model = Women
+class ShowPost(DataMixin, DetailView):
+    #model = Women
     template_name = 'women/post.html'
+    context_object_name = 'women'
     slug_url_kwarg = 'post_slug'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return self.get_mixin_context(context, title=context['women'].title)
+
+    def get_object(self, queryset=None):
+        return get_object_or_404(Women.published, slug=self.kwargs[self.slug_url_kwarg])
 
 # def show_post(request, post_slug):
 #     post = get_object_or_404(Women, slug=post_slug)
@@ -173,6 +184,14 @@ def show_tag_postlist(request, tag_slug):
         'posts': posts,
         'cat_selected': None, }
     return render(request, 'women/index.html', context=data)
+
+class ShowPostsByTag(ListView):
+    model = Women
+    template_name = 'women/index.html'
+
+    def get_queryset(self):
+        return Women.objects.filter(tags__slug=self.kwargs['tag_slug'])
+
 
 def page_not_found(request, exception):
     return HttpResponseNotFound("<h1>Страница не найдена</h1>")

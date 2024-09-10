@@ -21,5 +21,5 @@
 <p ><img class="img-article-left" src="{{women.photo.url}}"></p>
 {% endif %}
  
-{{women.content|linebreaks}}
+{{women.content|safe|linebreaks}}
 {% endblock %}
