@@ -1,3 +1,4 @@
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
@@ -50,18 +51,12 @@ class WomenHome(DataMixin, ListView):
 #         for chunk in f.chunks():
 #             destination.write(chunk)
 
-def about(request, form=None):
-    #files = form.cleaned_data["files"] #UploadedFile.objects.all()
-    if request.method == 'POST':
-        form = UploadFileForm(request.POST, request.FILES)
-        for uploaded_file in request.FILES.getlist('files'):
-            #handle_uploaded_file(uploaded_file)#UploadedFile.objects.create(file=uploaded_file)
-            fp = UploadFiles(file=uploaded_file)
-            fp.save()
-        return redirect('home')
-    else:
-        form = UploadFileForm()
-    return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu, 'form': form})
+def about(request):
+    contact_list = Women.objects.filter(is_published=True)
+    paginator = Paginator(contact_list, 3)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, 'women/about.html', {'title': 'О сайте', 'menu': menu, 'page_obj': page_obj})
 
 
 
@@ -152,7 +147,7 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
-class WomenCategory(ListView):
+class WomenCategory(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     allow_empty = False
@@ -185,7 +180,7 @@ def show_tag_postlist(request, tag_slug):
         'cat_selected': None, }
     return render(request, 'women/index.html', context=data)
 
-class ShowPostsByTag(ListView):
+class ShowPostsByTag(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
 

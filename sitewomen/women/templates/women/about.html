@@ -2,10 +2,14 @@
 
 {% block content %}
 <h1>{{title}}</h1>
-<form action="" method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-        {% comment %} <p><input type="file" name="file_upload"></p>{% endcomment %}
-    {{ form.as_div }}
-    <p><button type="submit">Отправить</button></p>
-</form>
+{% for item in page_obj %}
+<p>{{ item }}</p>
+{% endfor %}
+<nav><ul>
+{% for p in page_obj.paginator.page_range %}
+    <li>
+<a href="?page={{ p }}">{{ p }}</a>
+        </li>
+{% endfor %}
+</ul></nav>
 {% endblock %}

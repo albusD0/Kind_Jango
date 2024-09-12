@@ -11,9 +11,15 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<script src="https://cdn.tiny.cloud/1/w6mouv50aef2dxtp52xp5iciptkeeus0il19om9hd841un8s/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 	<script>
-	  tinymce.init({
-		selector: '#mytextarea'
-	  });
+tinyMCE.init({
+    mode: "textareas",
+    theme: "silver",
+    plugins: "spellchecker,directionality,paste,searchreplace",
+    language: "{{ language }}",
+    directionality: "{{ directionality }}",
+    spellchecker_languages : "{{ spellchecker_languages }}",
+    spellchecker_rpc_url : "{{ spellchecker_rpc_url }}"
+});
 	</script>
 </head>
 <body>
@@ -63,6 +69,8 @@
 {% endblock %}
 	</div>
 <!-- Конец блока контента -->
+
+	{% block navigation %}{% endblock %}
 
 </td></tr></table>
 </td></tr>
