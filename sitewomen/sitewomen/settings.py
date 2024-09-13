@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'women.apps.WomenConfig',
     'django_extensions',
     'django_ckeditor_5',
-    "tinymce",
+    'users.apps.UsersConfig'
+    #"tinymce",
 ]
 
 MIDDLEWARE = [
