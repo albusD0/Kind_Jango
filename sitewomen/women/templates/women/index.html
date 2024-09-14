@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {% block content %}
+{% if tag_title %}
+{{ tag_title }}
+{% endif %}
+<div class="article-panel"></div>
 <ul class="list-articles">
 	{% for p in women_list %}
 	<li><div class="article-panel">

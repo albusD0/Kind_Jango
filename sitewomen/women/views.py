@@ -28,6 +28,7 @@ class WomenHome(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     title_page = 'Главная страница'
+    cat_selected = 0
     # extra_context = {
     #     'title': 'Главная страница',
     #     'menu': menu,
