@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if tag_title %}
-{{ tag_title }}
-{% endif %}
-<div class="article-panel"></div>
+{{ women_list.0.category.title }}
+<div class="article-panel">{{ title }}</div>
+<hr>
 <ul class="list-articles">
+	{% if women_list %}
 	{% for p in women_list %}
 	<li><div class="article-panel">
          <p class="first">Категория: {{p.cat}}</p>
@@ -23,6 +23,9 @@
 			</li>
 	{% endfor %}
 </ul>
+{% else %}
+<p>Статьи отсутствуют</p>
+{% endif %}
 {% endblock %}
 
 {% block navigation %}

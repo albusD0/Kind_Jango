@@ -1,5 +1,6 @@
 from django.core.paginator import Paginator
-from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, \
+    HttpResponsePermanentRedirect, request
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.template.loader import render_to_string
@@ -152,13 +153,15 @@ class WomenCategory(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     allow_empty = False
-    extra_context = {
-        'title': 'Главная страница',
-        'menu': menu,
-        'cat_selected': 0}
+
     def get_queryset(self):
         return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Категория - ' + str(context['women_list'][0].cat)
+        context['cat_selected'] = context['women_list'][0].cat_id
+        return context
 
 # def show_category(request, cat_slug):
 #     category = get_object_or_404(Category, slug=cat_slug)
@@ -181,12 +184,22 @@ def show_tag_postlist(request, tag_slug):
         'cat_selected': None, }
     return render(request, 'women/index.html', context=data)
 
-class ShowPostsByTag(DataMixin, ListView):
-    model = Women
-    template_name = 'women/index.html'
 
-    def get_queryset(self):
-        return Women.objects.filter(tags__slug=self.kwargs['tag_slug'])
+# class ShowPostsByTag(DataMixin, ListView):
+#     model = Women
+#     template_name = 'women/index.html'
+#
+#     def get_queryset(self):
+#         return Women.objects.filter(tags__slug=self.kwargs['tag_slug'])
+
+class ShowPostsByTag(DataMixin, View):
+    def get(self, request, **kwargs):
+        tag = get_object_or_404(TagPost, slug=kwargs['tag_slug'])
+        posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+        data = {
+            'title': f'Тег: {tag.tag}',
+            'women_list': posts, }
+        return render(request, 'women/index.html', context=data)
 
 
 def page_not_found(request, exception):
