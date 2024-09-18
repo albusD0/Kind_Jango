@@ -174,15 +174,15 @@ class WomenCategory(DataMixin, ListView):
 #     }
 #     return render(request, 'women/index.html', context=data)
 
-def show_tag_postlist(request, tag_slug):
-    tag = get_object_or_404(TagPost, slug=tag_slug)
-    posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
-    data = {
-        'title': f'Тег: {tag.tag}',
-        'menu': menu,
-        'posts': posts,
-        'cat_selected': None, }
-    return render(request, 'women/index.html', context=data)
+# def show_tag_postlist(request, tag_slug):
+#     tag = get_object_or_404(TagPost, slug=tag_slug)
+#     posts = tag.tags.filter(is_published=Women.Status.PUBLISHED)
+#     data = {
+#         'title': f'Тег: {tag.tag}',
+#         'menu': menu,
+#         'posts': posts,
+#         'cat_selected': None, }
+#     return render(request, 'women/index.html', context=data)
 
 
 # class ShowPostsByTag(DataMixin, ListView):
