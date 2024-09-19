@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, \
     HttpResponsePermanentRedirect, request
@@ -53,6 +55,7 @@ class WomenHome(DataMixin, ListView):
 #         for chunk in f.chunks():
 #             destination.write(chunk)
 
+@login_required(login_url='users:login')
 def about(request):
     contact_list = Women.objects.filter(is_published=True)
     paginator = Paginator(contact_list, 3)
@@ -117,17 +120,23 @@ class ShowPost(DataMixin, DetailView):
 #             return redirect('home')
 #         return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
 
-class AddPage(CreateView):
+class AddPage(LoginRequiredMixin, DataMixin, CreateView):
     # form_class = AddPostForm
     model = Women
     fields = ['title', 'slug', 'content', 'is_published', 'cat', 'photo']
     template_name = 'women/addpage.html'
+    #login_url = '/admin/'
     #success_url = reverse_lazy('home')
 
     extra_context = {
         'menu': menu,
         'title': 'Добавление статьи',
     }
+
+    def form_valid(self, form):
+        w = form.save(commit=False)
+        w.author = self.request.user
+        return super().form_valid(form)
 
     # def form_valid(self, form): # Если используем CreateView то эта функция не нужна (FormView)
     #     form.save()

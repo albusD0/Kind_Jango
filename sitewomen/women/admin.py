@@ -24,9 +24,7 @@ class WomenAdmin(admin.ModelAdmin):
             return mark_safe(f"<img src='{women.photo.url}' width=50>")
         return 'Без фото'
 
-    formfield_overrides = {
-        models.TextField: {'widget': TinyMCE()}
-    }
+
 
 class TagsInline(admin.StackedInline):
     model = Women.tags.through

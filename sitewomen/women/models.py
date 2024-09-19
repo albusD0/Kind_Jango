@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.urls import reverse, reverse_lazy
 from django_ckeditor_5.fields import CKEditor5Field
@@ -17,7 +18,7 @@ class Women(models.Model):
 
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     slug = models.SlugField(max_length=255, db_index=True, unique=True)
-    content = CKEditor5Field(blank=True, verbose_name='Текст статьи')
+    content = models.TextField(blank=True, verbose_name='Текст статьи')
     #text=CKEditor5Field('Text', config_name='extends')
     photo = models.ImageField(upload_to="photos/%Y/%m/%d/", verbose_name='Фото')
     time_create = models.DateTimeField(auto_now_add=True, verbose_name='Время создания')
@@ -32,6 +33,7 @@ class Women(models.Model):
 
     husband = models.OneToOneField('Husband', on_delete=models.SET_NULL, null=True, blank=True, related_name='wuman', verbose_name='Муж')
 
+    author = models.ForeignKey(get_user_model(), on_delete=models.SET_NULL, related_name='posts', null=True, default=None)
 
     class Meta:
         verbose_name = 'Женщина'
