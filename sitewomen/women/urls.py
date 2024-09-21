@@ -1,12 +1,13 @@
 from django.urls import path, re_path, register_converter
 from . import views
 from . import converters
-from .views import WomenHome, WomenCategory, ShowPost, UpdatePage, ShowPostsByTag
+from .views import WomenHome, WomenCategory, ShowPost, UpdatePage, ShowPostsByTag, SearchResultsView
 
 register_converter(converters.FourDigitYearConverter, "year4")
 
 urlpatterns = [
     path('', WomenHome.as_view(), name='home'),
+    path('search/', SearchResultsView.as_view(), name='search_results'),
     path('about/', views.about, name='about'),
     #path('addpage/', views.addpage, name='add_page'),
     path('addpage/', views.AddPage.as_view(), name='add_page'),

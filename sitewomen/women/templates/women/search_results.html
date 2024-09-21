@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if object_list %}
+    {% for item in object_list %}
+	<p>Найдено по запросу: <strong>{{ query }}</strong></p>
+	<ul class="list-articles">
+    <li><div class="article-panel">
+         <p class="first">Категория: {{item.cat.name}} | автор:
+	    {{ item.author.username|default:"неизвестен" }}</p>
+         <p class="last">Дата: {{item.time_create|date:"d-m-Y H:i:s"}}</p>
+	    </div>
+	<li><a href="{{ item.get_absolute_url }}"><h2>{{item.title}}</h2></a>
+	    {% if item.photo %}
+	    <p ><img class="img-article-left" src="{{item.photo.url}}"></p>
+	    {% endif %}
+        {% autoescape off %}
+	    {{item.content|linebreaks|truncatewords:40|safe}}
+        {% endautoescape %}
+			<div class="clear"></div>
+			<p class="link-read-post"><a href="{{ item.get_absolute_url }}">Читать пост</a></p>
+			</li>
+	{% endfor %}
+    </ul>
+    {% else %}
+<p>По запросу <strong>{{ query }}</strong> ничего не найдено</p>
+    {% endif %}
+{% endblock %}

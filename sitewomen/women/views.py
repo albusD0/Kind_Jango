@@ -1,6 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseNotFound, Http404, HttpResponseRedirect, \
     HttpResponsePermanentRedirect, request
 from django.shortcuts import render, redirect, get_object_or_404
@@ -39,6 +40,21 @@ class WomenHome(DataMixin, ListView):
     #context_object_name = 'posts'
     def get_queryset(self):
         return Women.objects.filter(is_published=True)
+
+
+class SearchResultsView(ListView):
+    model = Women
+    template_name = 'women/search_results.html'
+
+    def get_queryset(self):  # новый
+        query = self.request.GET.get('q')
+        object_list = Women.objects.filter(title__icontains=query)
+        return object_list
+
+    def get_context_data(self, **kwargs):
+        query = super().get_context_data(**kwargs)
+        query['query'] = self.request.GET.get('q')
+        return query
 
 # def index(request):
 #     posts = Women.published.all()
@@ -121,9 +137,9 @@ class ShowPost(DataMixin, DetailView):
 #         return render(request, 'women/addpage.html', {'menu': menu, 'title': "Добавление статьи", 'form': form})
 
 class AddPage(LoginRequiredMixin, DataMixin, CreateView):
-    # form_class = AddPostForm
+    form_class = AddPostForm
     model = Women
-    fields = ['title', 'slug', 'content', 'is_published', 'cat', 'photo']
+    #fields = ['title', 'slug', 'content', 'is_published', 'cat', 'photo']
     template_name = 'women/addpage.html'
     #login_url = '/admin/'
     #success_url = reverse_lazy('home')
@@ -133,9 +149,8 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView):
         'title': 'Добавление статьи',
     }
 
-    def form_valid(self, form):
-        w = form.save(commit=False)
-        w.author = self.request.user
+    def form_valid(self, form): # здесь связывается пост и его автор
+        form.instance.author = self.request.user
         return super().form_valid(form)
 
     # def form_valid(self, form): # Если используем CreateView то эта функция не нужна (FormView)
